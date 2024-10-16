@@ -1,0 +1,506 @@
+using System;
+ 
+class Simpletron
+
+{
+
+    static int[] memory = new int[100];
+
+    static int accumulator = 0;
+
+    static int instructionCounter = 0;
+
+    static int instructionRegister = 0;
+
+    static int operationCode = 0;
+
+    static int operand = 0;
+ 
+    static void Main()
+
+    {
+
+        Console.WriteLine("*** Welcome to Simpletron! ***");
+
+        Console.WriteLine("*** Please enter your program one instruction ***");
+
+        Console.WriteLine("*** (or data word) at a time into the input ***");
+
+        Console.WriteLine("*** text field. I will display the location ***");
+
+        Console.WriteLine("*** number and a question mark (?). You then ***");
+
+        Console.WriteLine("*** type the word for that location. Enter ***");
+
+        Console.WriteLine("*** -99999 to stop entering your program. ***");
+ 
+        LoadProgram();
+
+        ExecuteProgram();
+
+    }
+ 
+    static void LoadProgram()
+
+    {
+
+        int instruction;
+
+        for (int i = 0; i < memory.Length; i++)
+
+        {
+
+            Console.Write($"{i:D2} ? ");
+
+            instruction = int.Parse(Console.ReadLine());
+
+            if (instruction == -99999)
+
+            {
+
+                Console.WriteLine("*** Program loading completed ***");
+
+                Console.WriteLine("*** Program execution begins ***");
+
+                break;
+
+            }
+
+            if (instruction < -9999 || instruction > 9999)
+
+            {
+
+                Console.WriteLine("Invalid instruction. Please enter a value between -9999 and 9999.");
+
+                i--;
+
+                continue;
+
+            }
+
+            memory[i] = instruction;
+
+        }
+
+    }
+ 
+    static void ExecuteProgram()
+
+    {
+
+        while (instructionCounter < memory.Length)
+
+        {
+
+            instructionRegister = memory[instructionCounter];
+
+            operationCode = instructionRegister / 100;
+
+            operand = instructionRegister % 100;
+ 
+            switch (operationCode)
+
+            {
+
+                case 10: // Read
+
+                    Console.Write("Enter a value: ");
+
+                    memory[operand] = int.Parse(Console.ReadLine());
+
+                    break;
+
+                case 11: // Write
+
+                    Console.WriteLine($"Output: {memory[operand]}");
+
+                    break;
+
+                case 20: // Load
+
+                    accumulator = memory[operand];
+
+                    break;
+
+                case 21: // Store
+
+                    memory[operand] = accumulator;
+
+                    break;
+
+                case 30: // Add
+
+                    accumulator += memory[operand];
+
+                    break;
+
+                case 31: // Subtract
+
+                    accumulator -= memory[operand];
+
+                    break;
+
+                case 32: // Divide
+
+                    if (memory[operand] == 0)
+
+                    {
+
+                        Console.WriteLine("*** Attempt to divide by zero ***");
+
+                        Console.WriteLine("*** Simpletron execution abnormally terminated ***");
+
+                        Dump();
+
+                        return;
+
+                    }
+
+                    accumulator /= memory[operand];
+
+                    break;
+
+                case 33: // Multiply
+
+                    accumulator *= memory[operand];
+
+                    break;
+
+                case 40: // Branch
+
+                    instructionCounter = operand;
+
+                    continue;
+
+                case 41: // Branch if zero
+
+                    if (accumulator == 0)
+
+                        instructionCounter = operand;
+
+                    continue;
+
+                case 42: // Branch if negative
+
+                    if (accumulator < 0)
+
+                        instructionCounter = operand;
+
+                    continue;
+
+                case 43: // Halt
+
+                    Console.WriteLine("*** Simpletron execution terminated ***");
+
+                    Dump();
+
+                    return;
+
+                default:
+
+                    Console.WriteLine("*** Invalid operation code ***");
+
+                    Console.WriteLine("*** Simpletron execution abnormally terminated ***");
+
+                    Dump();
+
+                    return;
+
+            }
+ 
+            instructionCounter++;
+
+        }
+
+    }
+ 
+    static void Dump()
+
+    {
+
+        Console.WriteLine("REGISTERS:");
+
+        Console.WriteLine($"accumulator: {accumulator:+0000;-0000}");
+
+        Console.WriteLine($"instructionCounter: {instructionCounter:D2}");
+
+        Console.WriteLine($"instructionRegister: {instructionRegister:+0000;-0000}");
+
+        Console.WriteLine($"operationCode: {operationCode:D2}");
+
+        Console.WriteLine($"operand: {operand:D2}");
+
+        Console.WriteLine("MEMORY:");
+
+        for (int i = 0; i < memory.Length; i++)
+
+        {
+
+            if (i % 10 == 0)
+
+                Console.WriteLine();
+
+            Console.Write($"{memory[i]:+0000;-0000} ");
+
+        }
+
+        Console.WriteLine();
+
+    }
+
+}
+
+ 
+This is the code to initialise the simpletron
+ 
+using System;
+
+using System.IO;
+ 
+class Simpletron
+
+{
+
+    static int[] memory = new int[100];
+
+    static int accumulator = 0;
+
+    static int instructionCounter = 0;
+
+    static int instructionRegister = 0;
+
+    static int operationCode = 0;
+
+    static int operand = 0;
+ 
+    static void Main()
+
+    {
+
+        Console.WriteLine("*** Welcome to Simpletron! ***");
+
+        Console.WriteLine("*** Please enter the filename of your program ***");
+ 
+        string filename = Console.ReadLine();
+
+        LoadProgramFromFile(filename);
+
+        ExecuteProgram();
+
+    }
+ 
+    static void LoadProgramFromFile(string filename)
+
+    {
+
+        try
+
+        {
+
+            string[] lines = File.ReadAllLines(filename);
+
+            for (int i = 0; i < lines.Length; i++)
+
+            {
+
+                int instruction = int.Parse(lines[i]);
+
+                if (instruction < -9999 || instruction > 9999)
+
+                {
+
+                    Console.WriteLine($"Invalid instruction at line {i + 1}. Please enter a value between -9999 and 9999.");
+
+                    return;
+
+                }
+
+                memory[i] = instruction;
+
+            }
+
+            Console.WriteLine("*** Program loading completed ***");
+
+            Console.WriteLine("*** Program execution begins ***");
+
+        }
+
+        catch (Exception e)
+
+        {
+
+            Console.WriteLine($"Error reading file: {e.Message}");
+
+        }
+
+    }
+ 
+    static void ExecuteProgram()
+
+    {
+
+        while (instructionCounter < memory.Length)
+
+        {
+
+            instructionRegister = memory[instructionCounter];
+
+            operationCode = instructionRegister / 100;
+
+            operand = instructionRegister % 100;
+ 
+            switch (operationCode)
+
+            {
+
+                case 10: // Read
+
+                    Console.Write("Enter a value: ");
+
+                    memory[operand] = int.Parse(Console.ReadLine());
+
+                    break;
+
+                case 11: // Write
+
+                    Console.WriteLine($"Output: {memory[operand]}");
+
+                    break;
+
+                case 20: // Load
+
+                    accumulator = memory[operand];
+
+                    break;
+
+                case 21: // Store
+
+                    memory[operand] = accumulator;
+
+                    break;
+
+                case 30: // Add
+
+                    accumulator += memory[operand];
+
+                    break;
+
+                case 31: // Subtract
+
+                    accumulator -= memory[operand];
+
+                    break;
+
+                case 32: // Divide
+
+                    if (memory[operand] == 0)
+
+                    {
+
+                        Console.WriteLine("*** Attempt to divide by zero ***");
+
+                        Console.WriteLine("*** Simpletron execution abnormally terminated ***");
+
+                        Dump();
+
+                        return;
+
+                    }
+
+                    accumulator /= memory[operand];
+
+                    break;
+
+                case 33: // Multiply
+
+                    accumulator *= memory[operand];
+
+                    break;
+
+                case 40: // Branch
+
+                    instructionCounter = operand;
+
+                    continue;
+
+                case 41: // Branch if zero
+
+                    if (accumulator == 0)
+
+                        instructionCounter = operand;
+
+                    continue;
+
+                case 42: // Branch if negative
+
+                    if (accumulator < 0)
+
+                        instructionCounter = operand;
+
+                    continue;
+
+                case 43: // Halt
+
+                    Console.WriteLine("*** Simpletron execution terminated ***");
+
+                    Dump();
+
+                    return;
+
+                default:
+
+                    Console.WriteLine("*** Invalid operation code ***");
+
+                    Console.WriteLine("*** Simpletron execution abnormally terminated ***");
+
+                    Dump();
+
+                    return;
+
+            }
+ 
+            instructionCounter++;
+
+        }
+
+        Dump();
+
+    }
+ 
+    static void Dump()
+
+    {
+
+        Console.WriteLine("REGISTERS:");
+
+        Console.WriteLine($"accumulator: {accumulator:+0000;-0000}");
+
+        Console.WriteLine($"instructionCounter: {instructionCounter:D2}");
+
+        Console.WriteLine($"instructionRegister: {instructionRegister:+0000;-0000}");
+
+        Console.WriteLine($"operationCode: {operationCode:D2}");
+
+        Console.WriteLine($"operand: {operand:D2}");
+
+        Console.WriteLine("MEMORY:");
+
+        for (int i = 0; i < memory.Length; i++)
+
+        {
+
+            if (i % 10 == 0)
+
+                Console.WriteLine();
+
+            Console.Write($"{memory[i]:+0000;-0000} ");
+
+        }
+
+        Console.WriteLine();
+
+    }
+
+}
+
+ 
