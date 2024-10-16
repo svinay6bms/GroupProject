@@ -1,0 +1,47 @@
+Task a: Sentinel-Controlled Loop to Read Positive Numbers and Compute Their Sum
+This program reads positive numbers and computes their sum. It terminates input when a negative number is entered.
+ 
+Plain Text
++1009  // Read a number into location 09
++2009  // Load the number from location 09 into the accumulator
++4107  // If the number is negative, branch to location 07 (halt)
++3008  // Add the number in location 08 (sum) to the accumulator
++2108  // Store the result back into location 08 (sum)
++4000  // Branch to location 00 (read next number)
++1108  // Write the sum from location 08
++4300  // Halt
+ 
+Task b: Counter-Controlled Loop to Read Seven Numbers and Compute Their Average
+This program reads seven numbers and computes their average.
+ 
+Plain Text
++2007  // Load the counter (7) into the accumulator
++3108  // Subtract 1 from the counter
++2107  // Store the updated counter back into location 07
++4109  // If the counter is zero, branch to location 09 (compute average)
++1009  // Read a number into location 09
++2009  // Load the number from location 09 into the accumulator
++3008  // Add the number in location 08 (sum) to the accumulator
++2108  // Store the result back into location 08 (sum)
++4000  // Branch to location 00 (read next number)
++2008  // Load the sum from location 08 into the accumulator
++3207  // Divide the sum by 7 (counter)
++2108  // Store the average back into location 08
++1108  // Write the average from location 08
++4300  // Halt
+Task c: Determine and Display the Largest Number
+This program reads a series of numbers and determines the largest number. The first number read indicates how many numbers should be processed.
+Plain Text
++1007  // Read the count of numbers into location 07
++2007  // Load the count into the accumulator
++3108  // Subtract 1 from the count
++2107  // Store the updated count back into location 07
++4109  // If the count is zero, branch to location 09 (display largest)
++1009  // Read a number into location 09
++2009  // Load the number from location 09 into the accumulator
++410A  // If the number is less than the largest, branch to location 0A (read next number)
++2009  // Load the number from location 09 into the accumulator
++2108  // Store the number as the largest in location 08
++4000  // Branch to location 00 (read next number)
++1108  // Write the largest number from location 08
++4300  // Halt
